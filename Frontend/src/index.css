@@ -105,7 +105,6 @@
   border: 2px dashed #2563eb;
 }
 
-
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -113,4 +112,70 @@
 .scrollbar-none {
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
   scrollbar-width: none; /* for Firefox */
+}
+
+/* NotFound.css */
+/* Full page black background and retro font */
+.not-found-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background: #000;
+  color: #fff;
+  font-family: "Press Start 2P", cursive;
+  position: relative;
+}
+
+/* Left column for image (only one image will be shown) */
+.images-column {
+  width: 30%;
+  position: absolute;
+  right: 5%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Increase image size */
+.side-image {
+  width: 100%;
+  max-width: 350px; /* adjust size as needed */
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Right container for the message */
+.message-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.message-container h1 {
+  font-size: 96px;
+  margin: 0;
+}
+
+.message-container p {
+  font-size: 24px;
+  margin: 20px 0;
+}
+
+.home-btn {
+  padding: 12px 24px;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.home-btn:hover {
+  background: #ddd;
 }

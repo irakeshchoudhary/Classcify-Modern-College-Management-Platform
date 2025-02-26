@@ -66,7 +66,7 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
       id: "explore",
       label: "Explore",
       icon: Compass,
-      path: "/admin/dashboard/explore",
+      path: "/teacher/dashboard/explore",
     },
     {
       id: "staffroom",

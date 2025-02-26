@@ -915,7 +915,7 @@ const StaffManagement = () => {
         <DialogContent className="text-center">
           <img
             src="https://cdn.dribbble.com/userupload/22050859/file/original-0bc2fa58763cee104c6c6092a3ae2d91.gif"
-            alt="Celebration GIF"
+            alt="Celeb  ration GIF"
             className="mx-auto w-64"
           />
           <h3 className="text-xl font-semibold mt-4">

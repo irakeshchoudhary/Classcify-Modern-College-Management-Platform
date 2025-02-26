@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 
-export const ProtectedRoute = ({ children, role }) => {
+const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem(`${role}Token`);
 
   if (!token) {
@@ -11,3 +11,5 @@ export const ProtectedRoute = ({ children, role }) => {
 
   return children;
 };
+
+export default ProtectedRoute;

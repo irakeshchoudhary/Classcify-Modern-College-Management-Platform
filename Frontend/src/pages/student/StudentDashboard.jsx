@@ -1,9 +1,13 @@
-import React from 'react'
+import CreateButton from "@/components/Common/CreateButton";
+import React from "react";
 
 const StudentDashboard = () => {
   return (
-    <div>StudentDashboard</div>
-  )
-}
+    <div>
+      <h1>Student Dashboard</h1>
+      <CreateButton />
+    </div>
+  );
+};
 
-export default StudentDashboard
+export default StudentDashboard;

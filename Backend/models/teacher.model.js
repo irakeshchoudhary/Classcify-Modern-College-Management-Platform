@@ -18,8 +18,8 @@ const teacherSchema = new mongoose.Schema({
     termsAccepted: { type: String, default: false }
   },
   location: {
-    city: { type: String},
-    state: { type: String},
+    city: { type: String },
+    state: { type: String },
     country: { type: String, default: 'India' }
   },
   // Step 3 Data
@@ -33,14 +33,17 @@ const teacherSchema = new mongoose.Schema({
     uid: { type: String, unique: true, sparse: true }
   },
 
+  auth: {
+    uid: { type: String, unique: true },
+    password: { type: String },
+    lastLogin: Date
+  },
+
   // OTP Verification
   otp: String,
   otpExpiry: Date,
 
-  // Timestamps
-  // createdAt: { type: Date, default: Date.now },
-  // updatedAt: Date
-}, {timestamps: true});
+}, { timestamps: true });
 
 const Teacher = mongoose.model('Teacher', teacherSchema);
 

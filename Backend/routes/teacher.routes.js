@@ -6,7 +6,9 @@ import {
   getDraft,
   getTeachers,
   deleteTeacher,
-  updateTeacher
+  updateTeacher,
+  teacherLogin,
+  getTeacherCourses
 } from '../controllers/teacher.controller.js';
 import { sendInvitationEmail } from '../controllers/sendInvitation.controller.js';
 
@@ -20,6 +22,8 @@ router.get('/', getTeachers);
 router.delete('/:id', deleteTeacher);
 router.put('/:id', updateTeacher);
 router.post('/send-invitation', sendInvitationEmail);
+router.post('/login', teacherLogin);
+router.get('/courses', getTeacherCourses);
 
 
 

@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AdminLogin from "./pages/auth/AdminLogin";
 import TeacherLogin from "./pages/auth/TeacherLogin";
 import StudentLogin from "./pages/auth/StudentLogin";
-import StudentSignup from "./pages/auth/StudentSignup";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import TeacherDashboardLayout from "./layouts/TeacherDashboardLayout";
 import StudentDashboardLayout from "./layouts/StudentDashboardLayout";
@@ -18,14 +17,25 @@ import Attendance from "./pages/teacher/Attendance";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import { UnauthenticatedRoute } from "./routes/UnauthenticatedRoute";
 import RegistrationDashboard from "./pages/auth/RegistrationDashboard";
+import ExplorePage from "./components/Common/ExplorePage";
+import TeacherClassroom from "./pages/teacher/TeacherClassroom";
+import Announcements from "./components/Common/Announcements";
+import Messages from "./components/Common/Messages";
+import Events from "./components/Common/Events";
+import Assets from "./components/Common/Assets";
+import AdminClassroom from "./pages/admin/AdminClassroom";
+import NotFound from "./components/NotFound";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const App = () => {
   return (
     <Routes>
-      {/* Auth Routes */}
+      {/* Public Routes */}
       <Route path="/" element={<RegistrationDashboard />} />
+
+      {/* Auth Routes (Only accessible if not logged in) */}
       <Route
-        path="/"
+        path="/admin/login"
         element={
           <UnauthenticatedRoute role="admin">
             <AdminLogin />
@@ -33,16 +43,20 @@ const App = () => {
         }
       />
       <Route
-        path="/"
-        element={<TeacherLogin />}
+        path="/teacher/login"
+        element={
+          <UnauthenticatedRoute role="teacher">
+            <TeacherLogin />
+          </UnauthenticatedRoute>
+        }
       />
       <Route
         path="/"
-        element={<StudentLogin />}
-      />
-      <Route
-        path="/student/signup"
-        element={<StudentSignup />}
+        element={
+          <UnauthenticatedRoute role="student">
+            <StudentLogin />
+          </UnauthenticatedRoute>
+        }
       />
 
       {/* Admin Dashboard Routes */}
@@ -58,6 +72,11 @@ const App = () => {
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="staffroom" element={<StaffManagement />} />
         <Route path="messages" element={<AdminMessages />} />
+        <Route path="explore" element={<ExplorePage />} />
+        <Route path="classroom" element={<AdminClassroom />} />
+        <Route path="announcements" element={<Announcements />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="events" element={<Events />} />
         {/* Add other admin routes */}
       </Route>
 
@@ -71,8 +90,14 @@ const App = () => {
         }
       >
         <Route index element={<TeacherDashboard />} />
+        <Route path="explore" element={<ExplorePage />} />
         <Route path="attendance" element={<Attendance />} />
+        <Route path="classroom" element={<TeacherClassroom />} />
+        <Route path="announcements" element={<Announcements />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="create" element={<TeacherCreate />} />
+        <Route path="events" element={<Events />} />
+        <Route path="assets" element={<Assets />} />
         {/* Add other teacher routes */}
       </Route>
 
@@ -91,28 +116,10 @@ const App = () => {
         {/* Add other student routes */}
       </Route>
 
-      {/* Redirects */}
+      {/* Redirects & 404 */}
       <Route path="/" element={<Navigate to="/admin/login" replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
-  );
-};
-
-// Protected Route Component (create this in components/auth/ProtectedRoute.jsx)
-const ProtectedRoute = ({ children, role }) => {
-  const token = localStorage.getItem(`${role}Token`);
-  if (!token) {
-    return <Navigate to={`/${role}/login`} replace />;
-  }
-  return children;
-};
-
-// Not Found Component (create this in components/NotFound.jsx)
-const NotFound = () => {
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <h1 className="text-4xl font-bold">404 - Page Not Found</h1>
-    </div>
   );
 };
 

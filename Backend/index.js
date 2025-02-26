@@ -5,9 +5,12 @@ import dotenv from 'dotenv';
 import adminRoutes from './routes/admin.routes.js';
 import teacherRoutes from './routes/teacher.routes.js';
 import { otpRateLimiter } from './middleware/rateLimiter.js';
+import studentRoutes from './routes/student.routes.js'
+import connectDB from './config/db.js';
+
 
 dotenv.config();
-
+connectDB();
 const app = express();
 
 // Middlewares
@@ -29,12 +32,17 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error('MongoDB Connection Error:', err));
 
+
+
+
 // Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/teachers', teacherRoutes);
+app.use('/api/students', studentRoutes);
+
 
 // Health Check
-app.get('/', (req, res) => res.json({ 
+app.get('/', (req, res) => res.json({
   status: 'OK',
   message: 'Classcify Backend API'
 }));
