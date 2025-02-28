@@ -33,4 +33,12 @@ const studentSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+
+studentSchema.index({
+    'personal.firstName': "text",
+    'personal.lastName': "text", 
+    'academic.course': "text",
+    'academic.collegeName': "text"
+  });
+
 export default mongoose.model('Student', studentSchema);

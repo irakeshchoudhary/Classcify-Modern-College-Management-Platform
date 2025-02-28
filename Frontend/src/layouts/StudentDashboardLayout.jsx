@@ -27,7 +27,7 @@ const StudentDashboardLayout = () => {
           isSidebarExpanded ? "pl-64" : "pl-20",
         )}
       >
-        <main className="p-4">
+        <main className="px-4 py-1">
           <Outlet />
         </main>
       </div>

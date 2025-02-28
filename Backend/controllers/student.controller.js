@@ -1,6 +1,9 @@
 import Student from '../models/student.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import Timetable from '../models/timetable.model.js';
+import Assignment from '../models/assignment.model.js';
+import Announcement from '../models/announcement.model.js';
 
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -120,4 +123,82 @@ export const getAllStudents = async (req, res) => {
         console.error("Error fetching students:", error);
         res.status(500).json({ error: 'Server error' });
     }
+};
+
+
+export const searchUsers = async (req, res) => {
+    try {
+        const query = req.query.q;
+        if (!query) return res.status(400).json({ error: 'Search query required' });
+
+        const users = await Student.find({
+            $or: [
+                { 'personal.firstName': { $regex: query, $options: 'i' } },
+                { 'personal.lastName': { $regex: query, $options: 'i' } },
+                { 'academic.course': { $regex: query, $options: 'i' } },
+                { 'academic.collegeName': { $regex: query, $options: 'i' } }
+            ]
+        })
+            .select('-password -otp -verified')
+            .limit(50)
+            .sort({ createdAt: -1 });
+
+        res.json(users);
+    } catch (error) {
+        console.error('Search users error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+export const getTimetable = async (req, res) => {
+  try {
+    const student = await Student.findById(req.user.id);
+    if (!student) return res.status(404).json({ error: "Student not found" });
+
+    const timetable = await Timetable.find({
+      collegeName: student.academic.collegeName,
+      course: student.academic.course
+    }).sort({ startTime: 1 });
+
+    res.json(timetable);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const getAssignments = async (req, res) => {
+  try {
+    const student = await Student.findById(req.user.id);
+    if (!student) return res.status(404).json({ error: "Student not found" });
+
+    const assignments = await Assignment.find({
+      collegeName: student.academic.collegeName,
+      course: student.academic.course,
+      dueDate: { $gte: new Date() }
+    }).sort({ dueDate: 1 });
+
+    res.json(assignments);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const getAnnouncements = async (req, res) => {
+  try {
+    const student = await Student.findById(req.user.id);
+    if (!student) return res.status(404).json({ error: "Student not found" });
+
+    const announcements = await Announcement.find({
+      collegeName: student.academic.collegeName,
+      $or: [
+        { course: student.academic.course },
+        { course: { $exists: false } },
+        { course: null }
+      ]
+    }).sort({ date: -1 });
+
+    res.json(announcements);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 };

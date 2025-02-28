@@ -78,18 +78,26 @@ const StudentLogin = () => {
         email: formData.email,
         password: formData.password,
       });
+  
+      console.log("Login API Response:", data); // Debugging
+  
       if (data?.token) {
         localStorage.setItem("studentToken", data.token);
-        navigate(location.state?.from || "/student/dashboard");
+        navigate("/student/dashboard");
+      } else {
+        console.error("Token missing in response!");
+        toast.error("Login failed. Please try again.");
       }
     } catch (error) {
+      console.error("Login Error:", error.response?.data);
       toast.error(
-        error.response?.data?.error || "Invalid credentials. Please try again.",
+        error.response?.data?.error || "Invalid credentials. Please try again."
       );
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSignupSubmit = async () => {
     const formValues = watch();

@@ -26,12 +26,14 @@ import Assets from "./components/Common/Assets";
 import AdminClassroom from "./pages/admin/AdminClassroom";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import StudentClassroom from "./pages/student/StudentClassroom";
 
 const App = () => {
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<RegistrationDashboard />} />
+      <Route path="/explore" element={<ExplorePage />} />
 
       {/* Auth Routes (Only accessible if not logged in) */}
       <Route
@@ -58,6 +60,7 @@ const App = () => {
           </UnauthenticatedRoute>
         }
       />
+
 
       {/* Admin Dashboard Routes */}
       <Route
@@ -111,6 +114,13 @@ const App = () => {
         }
       >
         <Route index element={<StudentDashboard />} />
+        <Route path="explore" element={<ExplorePage />} />
+        <Route path="announcements" element={<Announcements />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="events" element={<Events />} />
+        <Route path="assets" element={<Assets />} />
+        <Route path="attendance" element={<Attendance />} />
+        <Route path="classroom" element={<StudentClassroom />} />
         <Route path="community" element={<Community />} />
         <Route path="create" element={<StudentCreate />} />
         {/* Add other student routes */}

@@ -7,7 +7,11 @@ import teacherRoutes from './routes/teacher.routes.js';
 import { otpRateLimiter } from './middleware/rateLimiter.js';
 import studentRoutes from './routes/student.routes.js'
 import connectDB from './config/db.js';
-
+import postRoutes from './routes/post.routes.js';
+import announcementRoutes from './routes/announcement.routes.js';
+import assignmentRoutes from './routes/assignment.routes.js';
+import timetableRoutes from './routes/timetable.routes.js';
+import attendanceRoutes from './routes/attendance.routes.js';
 
 dotenv.config();
 connectDB();
@@ -27,19 +31,16 @@ app.use(express.urlencoded({ extended: true }));
 // Rate Limiter Middleware for OTP routes
 app.use('/api/teachers/send-otp', otpRateLimiter);
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
-
-
-
 
 // Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/teachers', teacherRoutes);
+app.use('/api/posts', postRoutes);
 app.use('/api/students', studentRoutes);
-
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/timetable', timetableRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // Health Check
 app.get('/', (req, res) => res.json({

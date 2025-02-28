@@ -1,5 +1,6 @@
-import { Plus, UploadCloud, X, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { Loader2, Plus, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -7,118 +8,147 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDropzone } from "react-dropzone";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import api from "@/api/axios";
+import postApi from "@/api/post.api";
 
 const CreateButton = () => {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  const onDrop = (acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      const uploadedFile = acceptedFiles[0];
-      setFile(uploadedFile);
-      const fileURL = URL.createObjectURL(uploadedFile);
-      setPreview(fileURL);
-    }
-  };
-
-  const removeFile = () => {
-    setFile(null);
-    setPreview(null);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setProgress(10);
-    
-    setTimeout(() => setProgress(50), 1000);
-    setTimeout(() => setProgress(100), 2000);
-    setTimeout(() => {
-      setLoading(false);
-      alert("Post created successfully!");
-    }, 2500);
-  };
+  const [formData, setFormData] = useState({ caption: "", tags: "" });
 
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: "image/*,video/*",
+    onDrop: (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+    },
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png"],
+      "video/*": [".mp4", ".mov"],
+    },
     maxFiles: 1,
   });
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!file) {
+      alert("No file selected!");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const formPayload = new FormData();
+      formPayload.append("media", file); // Make sure this is correct
+      formPayload.append("caption", formData.caption);
+      formPayload.append("tags", formData.tags);
+
+      console.log("🟢 Sending FormData:");
+      for (let [key, value] of formPayload.entries()) {
+        console.log(key, value);
+      }
+
+      await postApi.createPost(formPayload);
+      alert("Post created successfully!");
+      window.location.reload();
+    } catch (error) {
+      console.error("🔴 Error creating post:", error);
+      alert(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog> 
       <DialogTrigger asChild>
-        <div className="h-14 w-14 bg-[#432DD7] rounded-full flex items-center justify-center text-white fixed bottom-5 right-5 cursor-pointer shadow-lg hover:bg-[#2c1bb6] transition">
+        <div className="fixed z-50 cursor-pointer bottom-5 right-5 h-14 w-14 bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#2c1bb6] transition">
           <Plus />
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-md p-6 rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Create New Post</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Create New Post
+          </DialogTitle>
         </DialogHeader>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <Input type="text" placeholder="Title" required className="border rounded-lg p-2" />
-          
-          <Select>
-            <SelectTrigger className="border rounded-lg p-2">
-              <SelectValue placeholder="Select Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="education">Education</SelectItem>
-              <SelectItem value="technology">Technology</SelectItem>
-              <SelectItem value="science">Science</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <div {...getRootProps()} className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center cursor-pointer hover:bg-gray-100 transition relative">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div
+            {...getRootProps()}
+            className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
+          >
             <input {...getInputProps()} />
-            {file ? (
-              <div className="relative flex flex-col items-center">
-                {file.type.startsWith("image") && (
-                  <img src={preview} alt="Preview" className="w-full h-auto rounded-lg" />
-                )}
-                {file.type.startsWith("video") && (
-                  <video className="w-full h-auto rounded-lg" controls>
-                    <source src={preview} type={file.type} />
-                    Your browser does not support the video tag.
-                  </video>
-                )}
-                <button
-                  type="button"
-                  onClick={removeFile}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs"
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center">
-                <UploadCloud className="w-8 h-8 text-gray-500" />
-                <p className="text-gray-500 text-sm mt-2">Drag & drop or click to upload</p>
-              </div>
-            )}
+            {preview
+              ? (
+                <div className="relative">
+                  {file.type.startsWith("video/")
+                    ? (
+                      <video
+                        src={preview}
+                        className="max-h-64 mx-auto"
+                        controls
+                      />
+                    )
+                    : (
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="max-h-64 mx-auto"
+                      />
+                    )}
+                  <Button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFile(null);
+                      setPreview(null);
+                    }}
+                    className="absolute top-2 right-2 p-2 h-8 w-8 rounded-full"
+                    variant="destructive"
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+              )
+              : <p>Drag & drop or click to upload (image or video)</p>}
           </div>
-          
-          <Input type="text" placeholder="Tags (comma separated)" className="border rounded-lg p-2" />
-          <Textarea placeholder="Description" required className="border rounded-lg p-2" />
-          
-          {loading && (
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
-            </div>
-          )}
-          
-          <Button type="submit" className="bg-[#432DD7] text-white w-full hover:bg-[#2c1bb6] transition" disabled={loading}>
-            {loading ? <Loader2 className="animate-spin" /> : "Create"}
-          </Button>
+
+          <div className="space-y-2">
+            <Label htmlFor="caption">Caption</Label>
+            <Input
+              id="caption"
+              value={formData.caption}
+              onChange={(e) =>
+                setFormData({ ...formData, caption: e.target.value })}
+              placeholder="Add a caption..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags (comma separated)</Label>
+            <Input
+              id="tags"
+              value={formData.tags}
+              onChange={(e) =>
+                setFormData({ ...formData, tags: e.target.value })}
+              placeholder="tag1, tag2, tag3"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? <Loader2 className="animate-spin" /> : "Upload"}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
